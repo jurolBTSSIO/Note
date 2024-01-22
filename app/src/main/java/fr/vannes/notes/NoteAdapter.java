@@ -1,6 +1,7 @@
 package fr.vannes.notes;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +12,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 public class NoteAdapter extends FirebaseRecyclerAdapter<Note, NoteAdapter.NoteViewHolder> {
-    private Context context;
+    Context context;
     /**
      * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
      * {@link FirebaseRecyclerOptions} for configuration options.
@@ -28,6 +29,16 @@ public class NoteAdapter extends FirebaseRecyclerAdapter<Note, NoteAdapter.NoteV
         holder.titleTextView.setText(note.getTitle());
         holder.contentTextView.setText(note.getContent());
         holder.dateTextView.setText(note.getDate());
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, AddNoteActivity.class);
+            String docId = this.getRef(position).getKey();
+            intent.putExtra("docId", docId);
+            intent.putExtra("title", note.getTitle());
+            intent.putExtra("content", note.getContent());
+            intent.putExtra("date", note.getDate());
+            context.startActivity(intent);
+        });
     }
 
     @NonNull

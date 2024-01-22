@@ -2,14 +2,11 @@ package fr.vannes.notes;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,10 +15,12 @@ import com.google.firebase.database.ValueEventListener;
 
 public class AddNoteActivity extends AppCompatActivity {
     private EditText editTextTitle, editTextContent;
+    private TextView textViewTitle;
     private ImageButton imageButtonSave;
     private DatabaseReference database;
+    boolean isEditMode = false;
 
-    private String userId;
+    private String userId, title, content, date, docId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +28,29 @@ public class AddNoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_note);
 
         // Je lie l'activite a son fichier XML
+        textViewTitle = findViewById(R.id.page_title);
         editTextTitle = findViewById(R.id.title);
         editTextContent = findViewById(R.id.content);
         imageButtonSave = findViewById(R.id.saveButton);
+
+        // Je recupere les donnees de l'intent
+        title = getIntent().getStringExtra("title");
+        content = getIntent().getStringExtra("content");
+        docId = getIntent().getStringExtra("docId");
+
+        if (docId != null || !docId.isEmpty()) {
+            isEditMode = true;
+        }
+
+        //Je les affiche dans les champs
+        editTextTitle.setText(title);
+        editTextContent.setText(content);
+        if (isEditMode) {
+            textViewTitle.setText("Edit note");
+        } else {
+            textViewTitle.setText("Add note");
+        }
+
 
         database = FirebaseDatabase.getInstance().getReference("notes");
 
@@ -39,6 +58,7 @@ public class AddNoteActivity extends AppCompatActivity {
         imageButtonSave.setOnClickListener(v ->
                 {
                     saveNote();
+                    addNoteChangeListener();
                 }
         );
     }
@@ -47,6 +67,14 @@ public class AddNoteActivity extends AppCompatActivity {
      * Cette methode permet de sauvegarder une note
      */
     private void saveNote() {
+
+        if (isEditMode) {
+            userId = docId;
+        } else {
+            // Je genere une cle unique pour la note
+            userId = database.push().getKey();
+        }
+
         String title = editTextTitle.getText().toString();
         String content = editTextContent.getText().toString();
 
@@ -55,9 +83,6 @@ public class AddNoteActivity extends AppCompatActivity {
             editTextTitle.setError("Title and content are required");
             return;
         }
-
-        // Je genere une cle unique pour la note
-        userId = database.push().getKey();
 
         // Je cree une note
         Note note = new Note(title, content);

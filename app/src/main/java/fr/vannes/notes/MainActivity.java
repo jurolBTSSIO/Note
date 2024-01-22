@@ -37,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpRecyclerView() {
-        // Set up RecyclerView
+        // Set up du RecyclerView
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        // Set up FirebaseRecyclerAdapter
+        // Set up du FirebaseRecyclerAdapter
         Query query = FirebaseDatabase.getInstance().getReference("notes");
         FirebaseRecyclerOptions<Note> options = new FirebaseRecyclerOptions.Builder<Note>()
                 .setQuery(query, Note.class)
@@ -55,6 +55,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         noteAdapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        noteAdapter.stopListening();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        noteAdapter.notifyDataSetChanged();
     }
 
     private void showMenu() {
