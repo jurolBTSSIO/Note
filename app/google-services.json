@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "1068019352522",
+    "firebase_url": "https://note-6ebaa-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "note-6ebaa",
+    "storage_bucket": "note-6ebaa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068019352522:android:ecd7cc9c0a68d018e28533",
+        "android_client_info": {
+          "package_name": "fr.vannes.notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPC_FzBLmGFLQ4RPi-8zwiFc4j91ESKFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1068019352522:android:ff7ae4fb5e4a6e55e28533",
+        "android_client_info": {
+          "package_name": "fr.vannes.testfirebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPC_FzBLmGFLQ4RPi-8zwiFc4j91ESKFM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
