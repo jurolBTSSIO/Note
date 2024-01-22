@@ -3,6 +3,7 @@ package fr.vannes.notes;
 public class Note {
     private String title;
     private String content;
+    private String date;
 
     public Note() {
     }
@@ -13,6 +14,14 @@ public class Note {
     }
 
     // Getters and setters
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public String getTitle() {
         return title;
