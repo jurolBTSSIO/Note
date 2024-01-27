@@ -36,7 +36,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Note!"
+            android:text="Note+!"
             android:textStyle="bold"
             android:textSize="36sp"
             android:textColor="@color/black"
@@ -85,6 +85,16 @@
             android:layout_marginTop="12dp"
             android:textSize="16sp"
             />
+
+        <Button
+            android:id="@+id/githubLoginButton"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:backgroundTint="@color/black"
+            android:text="Login with GitHub"
+            android:onClick="loginWithGithub"
+            android:layout_marginTop="16dp"/>
+
 
         <ProgressBar
             android:layout_width="24dp"

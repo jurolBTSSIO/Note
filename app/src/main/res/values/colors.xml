@@ -11,5 +11,6 @@
     <color name="colorTextSubtitle">#CECECE</color>
     <color name="colorDelete">#FF4842</color>
     <color name="colorSearchBackground">#333333</color>
+    <color name="colorToolbar">#494949</color>
 
 </resources>

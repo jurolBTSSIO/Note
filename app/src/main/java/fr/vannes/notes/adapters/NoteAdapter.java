@@ -13,7 +13,7 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 
 import fr.vannes.notes.R;
 import fr.vannes.notes.activities.AddNoteActivity;
-import fr.vannes.notes.models.Note;
+import fr.vannes.notes.entities.Note;
 
 public class NoteAdapter extends FirebaseRecyclerAdapter<Note, NoteAdapter.NoteViewHolder> {
     Context context;

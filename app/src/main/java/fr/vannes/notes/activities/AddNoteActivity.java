@@ -1,40 +1,39 @@
 package fr.vannes.notes.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import fr.vannes.notes.models.Note;
-import fr.vannes.notes.openAI.OpenAIRequest;
 import fr.vannes.notes.R;
+import fr.vannes.notes.entities.Note;
+import fr.vannes.notes.openAI.OpenAIRequest;
 
 public class AddNoteActivity extends AppCompatActivity {
+
     private EditText editTextTitle, editTextContent, editKeywords;
     private TextView textViewTitle;
     private ImageButton imageButtonSave, imageButtonDelete, imageButtonOpenAI;
     private DatabaseReference database;
     private boolean isEditMode = false;
-
     private String userId, title, content, docId;
 
+    /**
+     * Cette methode est appelee lors de la creation de l'activite
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +108,7 @@ public class AddNoteActivity extends AppCompatActivity {
     private void deleteNote() {
         database.child(docId).removeValue();
         Toast.makeText(getApplicationContext(), "Note deleted", Toast.LENGTH_LONG).show();
-        startActivity(new Intent(AddNoteActivity.this, MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
@@ -145,7 +144,7 @@ public class AddNoteActivity extends AppCompatActivity {
         database.child(userId).setValue(note);
 
         Toast.makeText(getApplicationContext(), "Note saved", Toast.LENGTH_LONG).show();
-        startActivity(new Intent(AddNoteActivity.this, MainActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 }

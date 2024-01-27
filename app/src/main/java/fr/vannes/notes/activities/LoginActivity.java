@@ -1,5 +1,6 @@
 package fr.vannes.notes.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,16 +14,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GithubAuthProvider;
+import com.google.firebase.auth.OAuthCredential;
+import com.google.firebase.auth.OAuthProvider;
 
 import fr.vannes.notes.R;
 
 public class LoginActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
     private EditText editTextUsername, editTextPassword;
-    private Button buttonLogin;
+    private Button buttonLogin, buttonLoginGithub;
     ProgressBar progressBar;
     TextView textViewCreateAccount;
 
@@ -35,11 +43,18 @@ public class LoginActivity extends AppCompatActivity {
         editTextUsername = findViewById(R.id.email);
         editTextPassword = findViewById(R.id.password);
         buttonLogin = findViewById(R.id.loginButton);
+        buttonLoginGithub = findViewById(R.id.githubLoginButton);
         progressBar = findViewById(R.id.progressBar);
         textViewCreateAccount = findViewById(R.id.createAccountButton);
 
+        // Je recupere l'instance de FirebaseAuth
+        mAuth = FirebaseAuth.getInstance();
+
         // Je cree un listener pour le bouton de connexion
         buttonLogin.setOnClickListener(v -> loginWithPassword());
+        buttonLoginGithub.setOnClickListener(v -> loginWithGithub(v));
+
+        // Je cree un listener pour le bouton de creation de compte
         textViewCreateAccount.setOnClickListener(v
                 -> startActivity(new Intent(LoginActivity.this,
                 CreateAccountActivity.class)));
@@ -60,16 +75,16 @@ public class LoginActivity extends AppCompatActivity {
         if(!valid) {
             return;
         }
+
         // Je change la visibilite des elements
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         changeInProgress(true);
-        firebaseAuth.signInWithEmailAndPassword(username, password)
+        mAuth.signInWithEmailAndPassword(username, password)
                 .addOnCompleteListener(task -> {
                     changeInProgress(false);
 
                     if (task.isSuccessful()) {
                         // Je verifie si l'email est verifie
-                        if (firebaseAuth.getCurrentUser().isEmailVerified()) {
+                        if (mAuth.getCurrentUser().isEmailVerified()) {
                             // Je redirige l'utilisateur vers l'activite principale
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
@@ -87,24 +102,64 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void loginWithGithub() {
-        // Obtenir l'instance de FirebaseAuth
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        // Configurer le gestionnaire d'authentification GitHub
-        AuthCredential credential = GithubAuthProvider.getCredential("GitHubAccessToken");
+    /**
+     * Cette methode permet de se connecter avec GitHub
+     * @param view
+     */
+    private void loginWithGithub(View view) {
+
+        // Je cree un objet OAuthProvider
+        OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
+
+        // Je change la visibilité des éléments pendant l'authentification
+        changeInProgress(true);
+
         // Authentifier avec GitHub
-        auth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // L'authentification avec GitHub a réussi, vous pouvez accéder à l'utilisateur actuel via task.getResult().getUser()
-                        FirebaseUser user = task.getResult().getUser();
-                        // Faire quelque chose avec l'utilisateur connecté
-                    } else {
-                        // L'authentification avec GitHub a échoué
-                        Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+        mAuth
+                .startActivityForSignInWithProvider(this, provider.build())
+                .addOnSuccessListener(
+                        authResult -> {
+                            // User is signed in.
+                            // IdP data available in authResult.getAdditionalUserInfo().getProfile().
+                            // The OAuth access token can also be retrieved:
+                            // ((OAuthCredential)authResult.getCredential()).getAccessToken().
+                            // The OAuth secret can be retrieved by calling:
+                            // ((OAuthCredential)authResult.getCredential()).getSecret().
+                            String githubAccessToken = ((OAuthCredential) authResult.getCredential()).getAccessToken();
+
+                            // Maintenant, vous avez le jeton d'accès GitHub
+                            // Utilisez-le pour créer l'AuthCredential
+                            AuthCredential credential = GithubAuthProvider.getCredential(githubAccessToken);
+
+                            // Authentifier avec GitHub
+                            mAuth.signInWithCredential(credential)
+                                    .addOnCompleteListener(this, task -> {
+                                        // Restaurer la visibilité des éléments après l'authentification
+                                        changeInProgress(false);
+
+                                        // Vérifiez si l'authentification a réussi ou échoué
+                                        if (task.isSuccessful()) {
+                                            // L'authentification avec GitHub a réussi
+                                            FirebaseUser user = mAuth.getCurrentUser();
+                                            // Faire quelque chose avec l'utilisateur connecté
+                                            Toast.makeText(this, "GitHub authentication successful", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                            finish();
+                                        } else {
+                                            // L'authentification avec GitHub a échoué
+                                            Toast.makeText(this, "GitHub authentication failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        })
+                .addOnFailureListener(
+                        e -> {
+                            // Handle failure.
+                            // Restaurer la visibilité des éléments après l'échec de l'authentification
+                            changeInProgress(false);
+                            Toast.makeText(this, "GitHub authentication failed", Toast.LENGTH_SHORT).show();
+                        });
     }
+
 
     /**
      * Cette methode permet de verifier si les donnees sont valides

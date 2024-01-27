@@ -1,4 +1,4 @@
-package fr.vannes.notes.models;
+package fr.vannes.notes.entities;
 
 public class Note {
     private String title;
