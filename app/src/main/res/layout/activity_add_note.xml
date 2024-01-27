@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:padding="16dp"
-    tools:context=".AddNoteActivity">
+    tools:context=".activities.AddNoteActivity">
 
     <RelativeLayout
         android:id="@+id/titleBar"
@@ -25,6 +25,7 @@
             android:id="@+id/saveButton"
             android:layout_width="36dp"
             android:layout_height="wrap_content"
+            android:layout_margin="12dp"
             android:src="@drawable/round_add_task_24"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
@@ -42,7 +43,7 @@
         android:orientation="vertical"
         android:padding="16dp"
         android:layout_marginVertical="26dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/colorPrimary"
         android:background="@drawable/rounded_corner">
 
         <EditText
@@ -52,20 +53,46 @@
             android:hint="Title"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
+            android:textColorHint="@color/colorTextHint"
             android:layout_marginVertical="8dp"
             android:padding="12dp"
+            />
+
+        <EditText
+        android:id="@+id/keywords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Type your prompt here"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textColorHint="@color/colorTextHint"
+        android:layout_marginVertical="8dp"
+        android:padding="12dp"
+        />
+
+        <ImageButton
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/baseline_send_24"
+            android:backgroundTint="@color/colorPrimary"
+            android:layout_gravity="end"
             />
 
         <EditText
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Content"
+            android:hint="Type note here"
             android:minLines="15"
             android:gravity="top"
             android:textSize="20sp"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
+            android:textColorHint="@color/colorTextHint"
             android:layout_marginVertical="8dp"
             android:padding="12dp"
             />
@@ -78,8 +105,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/deleteButton"
         android:src="@drawable/baseline_delete_24"
+        android:backgroundTint="@color/colorPrimary"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:visibility="visible"
         />
 
 </RelativeLayout>

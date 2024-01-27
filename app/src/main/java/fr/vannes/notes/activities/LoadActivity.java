@@ -1,4 +1,4 @@
-package fr.vannes.notes;
+package fr.vannes.notes.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,8 @@ import android.os.Handler;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import fr.vannes.notes.R;
 
 public class LoadActivity extends AppCompatActivity {
 
@@ -23,17 +25,15 @@ public class LoadActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                // Si l'utilisateur est connecte, je lance l'activite principale
-                if (currentUser == null) {
-                    Intent i = new Intent(LoadActivity.this, LoginActivity.class);
-                    startActivity(i);
-                    // Sinon, je lance l'activite de creation de compte
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null) {
+                    // Si l'utilisateur n'est pas connecte, je lance l'activite de connexion
+                    startActivity(new Intent(LoadActivity.this, LoginActivity.class));
                 } else {
-                    Intent i = new Intent(LoadActivity.this, MainActivity.class);
-                    startActivity(i);
+                    // Sinon, je lance l'activite principale
+                    startActivity(new Intent(LoadActivity.this, MainActivity.class));
                 }
-                finish(); // Je ferme l'activite courante
+               finish();
             }
         }, 1000); // 1000 = 1 seconde
     }

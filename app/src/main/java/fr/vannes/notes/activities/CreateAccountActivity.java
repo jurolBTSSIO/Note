@@ -1,4 +1,4 @@
-package fr.vannes.notes;
+package fr.vannes.notes.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
+import fr.vannes.notes.R;
+import fr.vannes.notes.utilities.Util;
 
 public class CreateAccountActivity extends AppCompatActivity {
     // Je declare les variables

@@ -1,4 +1,4 @@
-package fr.vannes.notes;
+package fr.vannes.notes.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+
+import fr.vannes.notes.R;
+import fr.vannes.notes.activities.AddNoteActivity;
+import fr.vannes.notes.models.Note;
 
 public class NoteAdapter extends FirebaseRecyclerAdapter<Note, NoteAdapter.NoteViewHolder> {
     Context context;

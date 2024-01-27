@@ -1,4 +1,4 @@
-package fr.vannes.notes;
+package fr.vannes.notes.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -6,12 +6,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+
+import fr.vannes.notes.models.Note;
+import fr.vannes.notes.adapters.NoteAdapter;
+import fr.vannes.notes.R;
 
 public class MainActivity extends AppCompatActivity {
     private FloatingActionButton addNoteButton;
@@ -66,9 +74,34 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        noteAdapter.notifyDataSetChanged();
+        noteAdapter.startListening();
     }
 
+    /**
+     * Cette methode permet d'afficher le menu
+     */
     private void showMenu() {
+        Log.d("MainActivity", "showMenu() called");
+
+        PopupMenu popupMenu = new PopupMenu(MainActivity.this, menuButton);
+        popupMenu.getMenu().add("Log out");
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(item -> {
+            Log.d("MainActivity", "Menu item clicked: " + item.getTitle());
+
+            // Je vérifie si l'utilisateur a cliqué sur le bouton de déconnexion
+            if (item.getTitle().equals("Log out")) {
+                FirebaseAuth.getInstance().signOut();
+                Log.d("MainActivity", "User signed out");
+
+                // Ajouter ces lignes pour démarrer LoginActivity
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+                return true;
+            }
+            return false;
+        });
     }
+
 }
