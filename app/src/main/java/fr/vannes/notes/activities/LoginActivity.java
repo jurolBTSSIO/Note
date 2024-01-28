@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.OAuthCredential;
 import com.google.firebase.auth.OAuthProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.vannes.notes.R;
 
@@ -58,6 +62,10 @@ public class LoginActivity extends AppCompatActivity {
         textViewCreateAccount.setOnClickListener(v
                 -> startActivity(new Intent(LoginActivity.this,
                 CreateAccountActivity.class)));
+    }
+
+    private void loginWithGithub(View v) {
+        startActivity(new Intent(LoginActivity.this, LoginWithGithubActivity.class));
     }
 
     /**
@@ -101,65 +109,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
 
     }
-
-    /**
-     * Cette methode permet de se connecter avec GitHub
-     * @param view
-     */
-    private void loginWithGithub(View view) {
-
-        // Je cree un objet OAuthProvider
-        OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
-
-        // Je change la visibilité des éléments pendant l'authentification
-        changeInProgress(true);
-
-        // Authentifier avec GitHub
-        mAuth
-                .startActivityForSignInWithProvider(this, provider.build())
-                .addOnSuccessListener(
-                        authResult -> {
-                            // User is signed in.
-                            // IdP data available in authResult.getAdditionalUserInfo().getProfile().
-                            // The OAuth access token can also be retrieved:
-                            // ((OAuthCredential)authResult.getCredential()).getAccessToken().
-                            // The OAuth secret can be retrieved by calling:
-                            // ((OAuthCredential)authResult.getCredential()).getSecret().
-                            String githubAccessToken = ((OAuthCredential) authResult.getCredential()).getAccessToken();
-
-                            // Maintenant, vous avez le jeton d'accès GitHub
-                            // Utilisez-le pour créer l'AuthCredential
-                            AuthCredential credential = GithubAuthProvider.getCredential(githubAccessToken);
-
-                            // Authentifier avec GitHub
-                            mAuth.signInWithCredential(credential)
-                                    .addOnCompleteListener(this, task -> {
-                                        // Restaurer la visibilité des éléments après l'authentification
-                                        changeInProgress(false);
-
-                                        // Vérifiez si l'authentification a réussi ou échoué
-                                        if (task.isSuccessful()) {
-                                            // L'authentification avec GitHub a réussi
-                                            FirebaseUser user = mAuth.getCurrentUser();
-                                            // Faire quelque chose avec l'utilisateur connecté
-                                            Toast.makeText(this, "GitHub authentication successful", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                            finish();
-                                        } else {
-                                            // L'authentification avec GitHub a échoué
-                                            Toast.makeText(this, "GitHub authentication failed", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        })
-                .addOnFailureListener(
-                        e -> {
-                            // Handle failure.
-                            // Restaurer la visibilité des éléments après l'échec de l'authentification
-                            changeInProgress(false);
-                            Toast.makeText(this, "GitHub authentication failed", Toast.LENGTH_SHORT).show();
-                        });
-    }
-
 
     /**
      * Cette methode permet de verifier si les donnees sont valides
