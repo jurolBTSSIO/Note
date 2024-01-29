@@ -10,7 +10,6 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,25 +17,19 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GithubAuthProvider;
-import com.google.firebase.auth.OAuthCredential;
 import com.google.firebase.auth.OAuthProvider;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import fr.vannes.notes.R;
 
 public class LoginActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private EditText editTextUsername, editTextPassword;
     private Button buttonLogin, buttonLoginGithub;
-    ProgressBar progressBar;
-    TextView textViewCreateAccount;
+    private ProgressBar progressBar;
+    private TextView textViewCreateAccount;
+    private OAuthProvider.Builder provider = OAuthProvider.newBuilder("github.com");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +45,11 @@ public class LoginActivity extends AppCompatActivity {
         textViewCreateAccount = findViewById(R.id.createAccountButton);
 
         // Je recupere l'instance de FirebaseAuth
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
 
         // Je cree un listener pour le bouton de connexion
         buttonLogin.setOnClickListener(v -> loginWithPassword());
-        buttonLoginGithub.setOnClickListener(v -> loginWithGithub(v));
+        buttonLoginGithub.setOnClickListener(v -> signInWithGithubProvider());
 
         // Je cree un listener pour le bouton de creation de compte
         textViewCreateAccount.setOnClickListener(v
@@ -64,8 +57,58 @@ public class LoginActivity extends AppCompatActivity {
                 CreateAccountActivity.class)));
     }
 
-    private void loginWithGithub(View v) {
-        startActivity(new Intent(LoginActivity.this, LoginWithGithubActivity.class));
+    private void signInWithGithubProvider() {
+        Task<AuthResult> pendingResultTask = auth.getPendingAuthResult();
+        if (pendingResultTask != null) {
+            // There's something already here! Finish the sign-in for your user.
+            pendingResultTask
+                    .addOnSuccessListener(
+                            new OnSuccessListener<AuthResult>() {
+                                @Override
+                                public void onSuccess(AuthResult authResult) {
+                                    // User is signed in.
+                                    // IdP data available in
+                                    // authResult.getAdditionalUserInfo().getProfile().
+                                    // The OAuth access token can also be retrieved:
+                                    // ((OAuthCredential)authResult.getCredential()).getAccessToken().
+                                    // The OAuth secret can be retrieved by calling:
+                                    // ((OAuthCredential)authResult.getCredential()).getSecret().
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle failure.
+                                }
+                            });
+        } else {
+            auth
+                    .startActivityForSignInWithProvider(/* activity= */ this, provider.build())
+                    .addOnSuccessListener(
+                            new OnSuccessListener<AuthResult>() {
+                                @Override
+                                public void onSuccess(AuthResult authResult) {
+                                    // User is signed in.
+                                    // IdP data available in
+                                    // authResult.getAdditionalUserInfo().getProfile().
+                                    // The OAuth access token can also be retrieved:
+                                    // ((OAuthCredential)authResult.getCredential()).getAccessToken().
+                                    // The OAuth secret can be retrieved by calling:
+                                    // ((OAuthCredential)authResult.getCredential()).getSecret().
+                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle failure.
+                                }
+                            });
+
+        }
     }
 
     /**
@@ -86,13 +129,13 @@ public class LoginActivity extends AppCompatActivity {
 
         // Je change la visibilite des elements
         changeInProgress(true);
-        mAuth.signInWithEmailAndPassword(username, password)
+        auth.signInWithEmailAndPassword(username, password)
                 .addOnCompleteListener(task -> {
                     changeInProgress(false);
 
                     if (task.isSuccessful()) {
                         // Je verifie si l'email est verifie
-                        if (mAuth.getCurrentUser().isEmailVerified()) {
+                        if (auth.getCurrentUser().isEmailVerified()) {
                             // Je redirige l'utilisateur vers l'activite principale
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
